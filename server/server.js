@@ -1,39 +1,37 @@
-var mongoose = require('mongoose');
+var express = require('express'); 
+var bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp', { useNewUrlParser: true });
+var {mongoose} = require('./db/mongoose');
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user');
 
-// create a mongoose model
-var Todo = mongoose.model('Todo', {
-    text: {
-        type: String 
-    },
-    completed: {
-        type: Boolean
-    },
-    completedAt: {
-        type: Number
-    }
+var app = express(); 
+
+app.use(bodyParser.json()); 
+
+app.post('/todos', (req, res) => {
+
+    // console.log(req.body);
+
+    var todo = new Todo({
+        text: req.body.text
+    });
+
+    // console.log(todo);
+
+    todo.save().then((doc) => {
+
+        // console.log(doc);
+
+        res.send(doc);
+    }, (e) => {
+
+        // console.log(e);
+
+        res.status(400).send(e);
+    });
 });
 
-var newTodo = new Todo({
-    text: 'Eat Pizza Forever!'
-});
-
-var newerTodo = new Todo({
-    text: 'Eat Pizza Until You Die!',
-    completed: true,
-    completedAt: 100
-});
-
-newTodo.save().then((doc) => {
-    console.log('Save new Todo', doc);
-}, (e) => {
-    console.log(`Here is the error ${e}`)
-});
-
-newerTodo.save().then((doc) => {
-    console.log('Save newer Todo', doc);
-}, (e) => {
-    console.log(`Here is the error ${e}`)
-});
+app.listen(3000, () => {
+    console.log('Start on port 3000'); 
+}); 
