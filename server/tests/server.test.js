@@ -1,12 +1,14 @@
 const expect = require('expect'); 
 const request = require('supertest');
-
+const {ObjectID} = require('mongodb'); 
 const app = require('./../server');
 const {Todo} = require('./../models/todo');
 
 const todos =[{
+    _id: new ObjectID(),
     text: 'First test todo'
 }, {
+    _id: new ObjectID(),
     text: 'Second test todo'
 }];
 
@@ -41,7 +43,6 @@ describe('POST /todos', () => {
     });
 
     it('should not create todo with invalid body data', (done) => {
-
         request(app)
         .post('/todos')
         .send({})
@@ -59,8 +60,8 @@ describe('POST /todos', () => {
     });
 });
 
-describe('GET /todos', (done) => {
-    it('should get all todos', () => {
+describe('GET /todos', () => {
+    it('should get all todos', (done) => {
         request(app)
         .get('/todos')
         .expect(200)
@@ -69,4 +70,31 @@ describe('GET /todos', (done) => {
         })
         .end(done);
     });
+});
+
+describe('GET /todos/:id', () => {
+    it('should send a 404 status for invalid todo id', (done) => {
+        request(app)
+            .get('/todos/123')
+            .expect(404)
+            .end(done);
+
+    });
+
+    it('should send a 404 status for valid todo id that does not match a doc', (done) => {
+        request(app)
+            .get(`/todos/${ObjectID().toHexString()}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return a todo doc for a valid and matching todo id in the response body', (done) => {
+        request(app)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(todos[0].text);
+            })
+            .end(done); 
+    }); 
 });
