@@ -4,13 +4,11 @@ const {ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
-
 var app = express(); 
-
 const port = process.env.PORT || 3000; 
-
 app.use(bodyParser.json()); 
 
+//---------------------------------POST--------------------------------------------------------------
 app.post('/todos', (req, res) => {
 
     // console.log(req.body);
@@ -34,6 +32,7 @@ app.post('/todos', (req, res) => {
     });
 });
 
+//---------------------------------GET--------------------------------------------------------------
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});  // send back object en lieu of array 
@@ -59,6 +58,7 @@ app.get('/todos/:id', (req, res) => {
         });
 });
 
+//---------------------------------DELETE--------------------------------------------------------------
 app.delete('/todos/:id', (req, res) => {
     var id = req.params.id; 
     

@@ -4,6 +4,17 @@ const {ObjectID} = require('mongodb');
 const app = require('./../server');
 const {Todo} = require('./../models/todo');
 
+/* 
+----TEMPLATE--------
+
+describe('', () => {
+    it('', (done) => {
+        
+    });
+}); 
+
+*/
+
 const todos =[{
     _id: new ObjectID(),
     text: 'First test todo'
@@ -18,6 +29,7 @@ beforeEach((done) => {
     }).then(() => done());
 });
 
+//---------------------------------POST--------------------------------------------------------------
 describe('POST /todos', () => {
     it('should create a new todo', (done) => {
         var text = 'Test todo text';
@@ -60,6 +72,7 @@ describe('POST /todos', () => {
     });
 });
 
+//---------------------------------GET--------------------------------------------------------------
 describe('GET /todos', () => {
     it('should get all todos', (done) => {
         request(app)
@@ -73,7 +86,7 @@ describe('GET /todos', () => {
 });
 
 describe('GET /todos/:id', () => {
-    it('should send a 404 status for invalid todo id', (done) => {
+    it('should return a 404 status for invalid object id', (done) => {
         request(app)
             .get('/todos/123')
             .expect(404)
@@ -81,14 +94,14 @@ describe('GET /todos/:id', () => {
 
     });
 
-    it('should send a 404 status for valid todo id that does not match a doc', (done) => {
+    it('should return a 404 status for object id that does not match a doc', (done) => {
         request(app)
             .get(`/todos/${ObjectID().toHexString()}`)
             .expect(404)
             .end(done);
     });
 
-    it('should return a todo doc for a valid and matching todo id in the response body', (done) => {
+    it('should return a todo doc for a matching todo id in the response body', (done) => {
         request(app)
             .get(`/todos/${todos[0]._id.toHexString()}`)
             .expect(200)
@@ -98,3 +111,39 @@ describe('GET /todos/:id', () => {
             .end(done); 
     }); 
 });
+
+//---------------------------------DELETE--------------------------------------------------------------
+describe('DELETE /todos/:id', () => {
+    it('should return a 404 status for invalid object id', (done) => {
+        request(app)
+            .delete('/todos/123')
+            .expect(404)
+            .end(done);
+    });
+    it('should return a 404 status for object id that does not match a doc', (done) => {
+        request(app)
+            .delete(`/todos/${ObjectID().toHexString()}`)
+            .expect(404)
+            .end(done);
+    });
+    it('should remove a todo doc for a matching todo id', (done) => {
+        var hexId = todos[1]._id.toHexString();
+
+        request(app)
+            .delete(`/todos/${hexId}`)
+            .expect(200)
+            .expect((res)=> {
+                expect(res.body.todo._id).toBe(hexId); 
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err); 
+                }
+                Todo.findById(hexId).then((todo) => {
+                    expect(todo).toBeFalsy(); 
+                    done();
+                }).catch((e) => done(e)); 
+
+            });
+    });
+}); 
