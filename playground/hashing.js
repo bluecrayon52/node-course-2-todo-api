@@ -1,13 +1,27 @@
 const {SHA256} = require('crypto-js'); // for playground only
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs'); 
 
-var data = {
-    id: 10
-};
-var token = jwt.sign(data, 'somesecret');
-console.log('token: ',token); 
-var decoded = jwt.verify(token,'somesecret');
-console.log('decoded: ',decoded); 
+var password = '123abc';
+
+// bcrypt.genSalt(10, (err, salt) => {
+//     bcrypt.hash(password, salt, (err, hash) => {
+//        console.log(hash);  
+//     });
+// }); 
+
+var hashedPassword = '$2a$10$r8NSGSqvoxs4FVq7yxtMNOdV.2yqKc0T7O3.JJwjgi7h6wHX8XzYy';
+
+bcrypt.compare(password, hashedPassword, (err, res) => {
+    console.log(res); 
+})
+// var data = {
+//     id: 10
+// };
+// var token = jwt.sign(data, 'somesecret');
+// console.log('token: ',token); 
+// var decoded = jwt.verify(token,'somesecret');
+// console.log('decoded: ',decoded); 
 
 // // ------------ simulation of JSON web token management ----------
 
