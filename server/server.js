@@ -18,24 +18,14 @@ app.use(bodyParser.json());
 //---------------------------------POST--------------------------------------------------------------
 app.post('/todos', authenticate, (req, res) => {
 
-    // console.log(req.body);
-
     var todo = new Todo({
         text: req.body.text,
         _creator: req.user.id 
     });
 
-    // console.log(todo);
-
     todo.save().then((doc) => {
-
-        // console.log(doc);
-
         res.send(doc);
     }, (e) => {
-
-        // console.log(e);
-
         res.status(400).send(e);
     });
 });

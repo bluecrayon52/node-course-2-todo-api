@@ -1,4 +1,4 @@
-var env = process.env.NODE_ENV || 'development';  // set to production by heroku 
+var env = process.env.NODE_ENV || 'development';  // set to test by package.json, production by heroku
 
 if (env === 'development' || env === 'test') {
     var config = require('./config.json'); 
