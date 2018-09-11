@@ -1,7 +1,7 @@
 var {User} = require('./../models/user');
 
 // middleware to auth the use of private routes
-var authenticateByToken = (req, res, next) => {
+var authenticate = (req, res, next) => {
     var token = req.header('x-auth');
 
     User.findByToken(token).then((user) => {
@@ -17,4 +17,4 @@ var authenticateByToken = (req, res, next) => {
     });
 };
 
- module.exports = {authenticateByToken}; 
+ module.exports = {authenticate}; 
